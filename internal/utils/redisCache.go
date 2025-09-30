@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -76,5 +77,17 @@ func DeleteSomeCache(reqContxt context.Context, rdb redis.Client) error {
 		log.Printf("Successfully deleted %d keys.\n", deletedCount)
 	}
 	// return error nill if success
+	return nil
+}
+
+// blcklist token (logout)
+func BlackListTokenRedish(reqCntxt context.Context, rdb redis.Client, authToken string) error {
+	token := strings.Split(authToken, " ")[1]
+	err := rdb.Set(reqCntxt, "communicare-your-social:blacklist:"+token, "true", 30*time.Minute).Err()
+	if err != nil {
+		log.Println("Redis Error when blacklist token:", err)
+		return err
+	}
+	// return error nil, if success
 	return nil
 }

@@ -49,7 +49,7 @@ func main() {
 	defer rdb.Close()
 
 	// inizialization engine gin
-	router := routers.InitRouter()
+	router := routers.InitRouter(db, rdb)
 	//  run the engine gin
 	// Run this project on 127.0.0.1:3000 or localhost:3000
 	if runtime.GOOS == "windows" {
