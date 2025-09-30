@@ -24,6 +24,19 @@ func main() {
 	}
 
 	// inisialsation database for this project
+	db, err := configs.InitDB()
+	if err != nil {
+		log.Println("FAILED TO CONNECT DB")
+		return
+	}
+	defer db.Close()
+	// test ping database
+	err = configs.PingDB(db)
+	if err != nil {
+		log.Println("PING TO DB FAILED", err.Error())
+		return
+	}
+	log.Println("database connected")
 
 	// inizialization redish for this project
 	rdb := configs.InitRedis()
