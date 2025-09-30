@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"runtime"
 
 	"github.com/joho/godotenv"
+	"github.com/m16yusuf/communicare/internal/configs"
 	"github.com/m16yusuf/communicare/internal/routers"
 )
 
@@ -24,6 +26,14 @@ func main() {
 	// inisialsation database for this project
 
 	// inizialization redish for this project
+	rdb := configs.InitRedis()
+	cmd := rdb.Ping(context.Background())
+	if cmd.Err() != nil {
+		log.Println("failed ping on redis \nCause:", cmd.Err().Error())
+		return
+	}
+	log.Println("Redis Connected")
+	defer rdb.Close()
 
 	// inizialization engine gin
 	router := routers.InitRouter()
