@@ -1,0 +1,58 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "communicare your social app",
+        "title": "communicare",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "127.0.0.1:3000",
+    "paths": {
+        "/{any}": {
+            "get": {
+                "description": "if route not found, send 404 statusNotfound as response",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NoRoute"
+                ],
+                "summary": "testing display for no route",
+                "responses": {
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.NotFoundResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.NotFoundResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 404
+                },
+                "error": {
+                    "type": "string",
+                    "example": "example, Not Found"
+                },
+                "is_success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "JWTtoken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

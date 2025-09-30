@@ -1,0 +1,39 @@
+definitions:
+  models.NotFoundResponse:
+    properties:
+      code:
+        example: 404
+        type: integer
+      error:
+        example: example, Not Found
+        type: string
+      is_success:
+        example: false
+        type: boolean
+    type: object
+host: 127.0.0.1:3000
+info:
+  contact: {}
+  description: communicare your social app
+  title: communicare
+  version: "1.0"
+paths:
+  /{any}:
+    get:
+      description: if route not found, send 404 statusNotfound as response
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.NotFoundResponse'
+      summary: testing display for no route
+      tags:
+      - NoRoute
+securityDefinitions:
+  JWTtoken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
