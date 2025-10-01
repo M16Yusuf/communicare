@@ -14,5 +14,7 @@ func InitSocialRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	socialRepository := repositories.NewSocialRepository(db, rdb)
 	sh := handlers.NewSocialHandler(socialRepository)
 
+	socialRouter.GET("/post", middleware.VerifyToken(rdb), sh.GetFollowedPost)
+	socialRouter.POST("/post", middleware.VerifyToken(rdb), sh.LikeAndOrCommentPost)
 	socialRouter.POST("/follow/:user_id", middleware.VerifyToken(rdb), sh.FollowAUser)
 }
