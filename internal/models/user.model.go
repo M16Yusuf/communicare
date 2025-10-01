@@ -32,16 +32,3 @@ type ProfileResponse struct {
 	Bio       *string   `json:"bio"`
 	CreatedAt time.Time `json:"created_at"`
 }
-
-type Post struct {
-	Id        string    `db:"id"`
-	UserId    string    `db:"user_id"`
-	Caption   *string   `db:"caption"`
-	Photo     *string   `db:"photo"`
-	CreatedAt time.Time `db:"created_at"`
-}
-
-type PostRequest struct {
-	Caption *string               `json:"caption" form:"caption"`
-	Photo   *multipart.FileHeader `json:"photo" form:"photo"`
-}
