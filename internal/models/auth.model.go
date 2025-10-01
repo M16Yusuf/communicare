@@ -7,5 +7,5 @@ type AuthRequest struct {
 
 type LoginResponse struct {
 	Response
-	Token string `json:"token"`
+	Token string `json:"token" example:"example : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
 }

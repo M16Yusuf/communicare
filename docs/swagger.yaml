@@ -1,4 +1,56 @@
 definitions:
+  models.AuthRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.BadRequestResponse:
+    properties:
+      code:
+        example: 400
+        type: integer
+      error:
+        example: Example bad request error...
+        type: string
+      is_success:
+        example: false
+        type: boolean
+    type: object
+  models.InternalErrorResponse:
+    properties:
+      code:
+        example: 500
+        type: integer
+      error:
+        example: Example Internal server error...
+        type: string
+      is_success:
+        example: false
+        type: boolean
+    type: object
+  models.LoginResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      is_success:
+        example: true
+        type: boolean
+      message:
+        example: Example message success...
+        type: string
+      page:
+        example: 1
+        type: integer
+      token:
+        example: 'example : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        type: string
+    type: object
   models.NotFoundResponse:
     properties:
       code:
@@ -10,6 +62,21 @@ definitions:
       is_success:
         example: false
         type: boolean
+    type: object
+  models.Response:
+    properties:
+      code:
+        example: 200
+        type: integer
+      is_success:
+        example: true
+        type: boolean
+      message:
+        example: Example message success...
+        type: string
+      page:
+        example: 1
+        type: integer
     type: object
 host: 127.0.0.1:3000
 info:
@@ -31,6 +98,90 @@ paths:
       summary: testing display for no route
       tags:
       - NoRoute
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Melakukan autentikasi pengguna dengan email dan password.
+      parameters:
+      - description: body Login
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login berhasil
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "400":
+          description: Email atau password kosong, atau email/password salah
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "404":
+          description: Email tidak ditemukan atau email/password salah
+          schema:
+            $ref: '#/definitions/models.NotFoundResponse'
+        "500":
+          description: Kesalahan internal server
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      summary: Login pengguna
+      tags:
+      - Auth
+  /auth/logout:
+    delete:
+      description: Mem-blacklist JWT Token yang aktif untuk mengakhiri sesi.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout berhasil
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Kesalahan server internal saat mem-blacklist token
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Logout pengguna
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan pengguna baru dengan email dan password.
+      parameters:
+      - description: Data Pendaftaran Pengguna (Email dan Password)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Pendaftaran berhasil
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: 'Validasi input gagal (misalnya: email tidak valid, password
+            terlalu pendek, atau email sudah terdaftar)'
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Kesalahan server internal
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      summary: Pendaftaran pengguna baru
+      tags:
+      - Auth
 securityDefinitions:
   JWTtoken:
     in: header

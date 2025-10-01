@@ -21,6 +21,18 @@ func NewAuthHandler(ar *repositories.AuthRepository) *AuthHandler {
 	return &AuthHandler{ar: ar}
 }
 
+// Login
+// @Router /auth/login [post]
+// @Tags Auth
+// @Summary Login pengguna
+// @Description Melakukan autentikasi pengguna dengan email dan password.
+// @Accept json
+// @Produce json
+// @Param request body models.AuthRequest true "body Login"
+// @Success 200 {object} models.LoginResponse "Login berhasil"
+// @Failure 400 {object} models.BadRequestResponse "Email atau password kosong, atau email/password salah"
+// @Failure 404 {object} models.NotFoundResponse "Email tidak ditemukan atau email/password salah"
+// @Failure 500 {object} models.InternalErrorResponse "Kesalahan internal server"
 func (a *AuthHandler) Login(ctx *gin.Context) {
 	var body models.AuthRequest
 	if err := ctx.ShouldBind(&body); err != nil {
@@ -30,7 +42,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
 				Response: models.Response{
 					IsSuccess: false,
-					Code:      400,
+					Code:      http.StatusBadRequest,
 				},
 				Err: "Email or password cannot be empty",
 			})
@@ -41,7 +53,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      500,
+				Code:      http.StatusInternalServerError,
 			},
 			Err: "internal server error",
 		})
@@ -52,10 +64,10 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 	user, err := a.ar.LoginUser(ctx.Request.Context(), body.Email)
 	if err != nil {
 		if strings.Contains(err.Error(), "user not found") {
-			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			ctx.JSON(http.StatusNotFound, models.ErrorResponse{
 				Response: models.Response{
 					IsSuccess: false,
-					Code:      400,
+					Code:      http.StatusNotFound,
 				},
 				Err: "Email or Password is incorrect",
 			})
@@ -64,7 +76,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      500,
+				Code:      http.StatusInternalServerError,
 			},
 			Err: "internal server error",
 		})
@@ -85,7 +97,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      500,
+				Code:      http.StatusInternalServerError,
 			},
 			Err: "internal server error",
 		})
@@ -96,7 +108,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      400,
+				Code:      http.StatusBadRequest,
 			},
 			Err: "Email or Password is incorrect",
 		})
@@ -110,7 +122,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      500,
+				Code:      http.StatusInternalServerError,
 			},
 			Err: "internal server error",
 		})
@@ -127,6 +139,17 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 	})
 }
 
+// register
+// @Tags Auth
+// @Router /auth/register [post]
+// @Summary Pendaftaran pengguna baru
+// @Description Mendaftarkan pengguna baru dengan email dan password.
+// @Accept json
+// @Produce json
+// @Param request body models.AuthRequest true "Data Pendaftaran Pengguna (Email dan Password)"
+// @Success 200 {object} models.Response "Pendaftaran berhasil"
+// @Failure 400 {object} models.BadRequestResponse "Validasi input gagal (misalnya: email tidak valid, password terlalu pendek, atau email sudah terdaftar)"
+// @Failure 500 {object} models.InternalErrorResponse "Kesalahan server internal"
 func (a *AuthHandler) Register(ctx *gin.Context) {
 	var body models.AuthRequest
 
@@ -135,7 +158,7 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      500,
+				Code:      http.StatusInternalServerError,
 			},
 			Err: "Failed binding data ...",
 		})
@@ -147,7 +170,7 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      400,
+				Code:      http.StatusBadRequest,
 			},
 			Err: err.Error(),
 		})
@@ -162,7 +185,7 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 				Response: models.Response{
 					IsSuccess: false,
-					Code:      500,
+					Code:      http.StatusInternalServerError,
 				},
 				Err: err.Error(),
 			})
@@ -199,6 +222,15 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 	}
 }
 
+// Logout
+// @Tags Auth
+// @Router /auth/logout [delete]
+// @Summary Logout pengguna
+// @Description Mem-blacklist JWT Token yang aktif untuk mengakhiri sesi.
+// @Security JWTtoken
+// @Produce json
+// @Success 200 {object} models.Response "Logout berhasil"
+// @Failure 500 {object} models.InternalErrorResponse "Kesalahan server internal saat mem-blacklist token"
 func (a *AuthHandler) Logout(ctx *gin.Context) {
 	// get token user for logout
 	bearerToken := ctx.GetHeader("Authorization")
@@ -207,7 +239,7 @@ func (a *AuthHandler) Logout(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
 			Response: models.Response{
 				IsSuccess: false,
-				Code:      500,
+				Code:      http.StatusInternalServerError,
 			},
 			Err: err.Error(),
 		})
@@ -215,7 +247,7 @@ func (a *AuthHandler) Logout(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusOK, models.Response{
 			IsSuccess: true,
-			Code:      200,
+			Code:      http.StatusOK,
 			Msg:       "Logout successfully",
 		})
 	}
