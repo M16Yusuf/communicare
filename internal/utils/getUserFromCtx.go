@@ -13,7 +13,7 @@ func GetUserFromCtx(ctx *gin.Context) (string, error) {
 		return "", errors.New("claims not found in context, token might be missing")
 	}
 
-	userClaims, ok := claims.(*pkg.Claims)
+	userClaims, ok := claims.(pkg.Claims)
 	if !ok {
 		return "", errors.New("invalid claims format")
 	}
