@@ -103,3 +103,83 @@ func (uh *UserHandler) UpdateProfile(ctx *gin.Context) {
 		})
 	}
 }
+
+// create post
+// @Tags User
+// @Router /users/post [post]
+// @Summary Membuat Postingan Baru
+// @Description Mengunggah foto dan caption untuk membuat postingan baru. Membutuhkan otentikasi (JWT).
+// @Accept multipart/form-data
+// @Produce json
+// @Security JWTtoken
+// @Param caption formData string false "Teks caption untuk postingan"
+// @Param photo formData file true "File gambar untuk Postingan (Wajib)"
+// @Success 200 {object} models.Response "Postingan berhasil dibuat"
+// @Failure 400 {object} models.BadRequestResponse "Input tidak valid, file tidak ditemukan, atau kegagalan upload file"
+// @Failure 401 {object} models.UnauthorizedResponse "Token tidak valid atau tidak ada"
+// @Failure 500 {object} models.InternalErrorResponse "Kesalahan server internal"
+func (uh *UserHandler) CreatePost(ctx *gin.Context) {
+	// get user it from token
+	userID, err := utils.GetUserFromCtx(ctx)
+	if err != nil {
+		log.Println("error cause: ", err.Error())
+		ctx.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      http.StatusUnauthorized,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	var body models.PostRequest
+	if err := ctx.ShouldBind(&body); err != nil {
+		log.Println("error cause: ", err.Error())
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      http.StatusBadRequest,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	file := body.Photo
+	filename, err := utils.FileUpload(ctx, file, "photo")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      http.StatusBadRequest,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	post := models.Post{
+		UserId:  userID,
+		Caption: body.Caption,
+		Photo:   &filename,
+	}
+	// query to databse to create post
+	if err := uh.userRep.CreatePost(ctx.Request.Context(), post); err != nil {
+		log.Println("error cause: ", err.Error())
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      http.StatusInternalServerError,
+			},
+			Err: "internal server error",
+		})
+		return
+	} else {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsSuccess: true,
+			Code:      http.StatusOK,
+			Msg:       "successfully create post",
+		})
+	}
+}

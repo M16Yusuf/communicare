@@ -15,4 +15,5 @@ func InitUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	uh := handlers.NewUserHandler(userRepository)
 
 	userRouter.POST("", middleware.VerifyToken(rdb), uh.UpdateProfile)
+	userRouter.POST("/post", middleware.VerifyToken(rdb), uh.CreatePost)
 }

@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -52,4 +54,40 @@ func (ur *UserRepository) UpdateProfileUser(cntxt context.Context, userProfile m
 
 	// return error nil if not error
 	return newProfile, nil
+}
+
+// create post
+func (ur *UserRepository) CreatePost(cntxt context.Context, body models.Post) error {
+	sqlStart := `INSERT INTO posts ( user_id `
+	sqlend := `VALUES ($1 `
+
+	values := []any{body.UserId}
+	if body.Caption != nil {
+		idx := strconv.Itoa(len(values) + 1)
+		sqlStart += `, caption `
+		sqlend += ", $" + idx + ""
+		values = append(values, body.Caption)
+	}
+	if body.Photo != nil {
+		idx := strconv.Itoa(len(values) + 1)
+		sqlStart += `, photo `
+		sqlend += ", $" + idx + ""
+		values = append(values, body.Photo)
+	}
+
+	sqlMerge := fmt.Sprintf("%s ) %s )", sqlStart, sqlend)
+	log.Println(sqlMerge)
+
+	cmd, err := ur.db.Exec(cntxt, sqlMerge, values...)
+	if err != nil {
+		log.Println("Failed execute query follow\nCause:", err)
+		return err
+	}
+	if cmd.RowsAffected() == 0 {
+		log.Println("no row effected when insert post maybe failed?")
+		return errors.New("failed create post")
+	}
+
+	// return error nil if success
+	return nil
 }
