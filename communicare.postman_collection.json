@@ -1,0 +1,331 @@
+{
+	"info": {
+		"_postman_id": "afdfcd24-4a51-4ffd-b3e5-3b4070d47e92",
+		"name": "communicare",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12317382"
+	},
+	"item": [
+		{
+			"name": "register user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"sidiq@gmail.com\",\r\n    \"password\" : \"admin@112233\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:3000/auth/register",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"yusufsmd58@gmail.com\",\r\n    \"password\" : \"admin@112233\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:3000/auth/login",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout (required token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg1MjA0YjhjLWU2YjAtNGEyZS04ZTlmLTU4NWYzNThiY2RlMSIsInJvbGUiOiJ1c2VyIiwiaXNzIjoibTE2eXVzdWZAZ2FudGVuZyIsImV4cCI6MTc1OTMwNjIzN30.9_gNW0XWxpgQn1TomrwT994k8sKdh2GL7ZnSR0nt_Yc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:3000/auth/logout",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "follow a user (required token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhZThmMTliLTI4ZmUtNDhhYS05MzgwLTlhNjBiNDkzYzQ0MyIsInJvbGUiOiJ1c2VyIiwiaXNzIjoibTE2eXVzdWZAZ2FudGVuZyIsImV4cCI6MTc1OTMwNTI3OX0.yOI9Ul8hAjFrOyfWLPKLjhFFgB3ZH8R8rhDxo8sxjv0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3000/social/follow/:user_id",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"social",
+						"follow",
+						":user_id"
+					],
+					"variable": [
+						{
+							"key": "user_id",
+							"value": "85204b8c-e6b0-4a2e-8e9f-585f358bcde1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get followed user's post (required token)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhZThmMTliLTI4ZmUtNDhhYS05MzgwLTlhNjBiNDkzYzQ0MyIsInJvbGUiOiJ1c2VyIiwiaXNzIjoibTE2eXVzdWZAZ2FudGVuZyIsImV4cCI6MTc1OTMwNTI3OX0.yOI9Ul8hAjFrOyfWLPKLjhFFgB3ZH8R8rhDxo8sxjv0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"yusufsmd58@gmail.com\",\r\n    \"password\" : \"admin@112233\"\r\n}"
+				},
+				"url": {
+					"raw": "127.0.0.1:3000/social/post",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"social",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "like or comment post (required token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhZThmMTliLTI4ZmUtNDhhYS05MzgwLTlhNjBiNDkzYzQ0MyIsInJvbGUiOiJ1c2VyIiwiaXNzIjoibTE2eXVzdWZAZ2FudGVuZyIsImV4cCI6MTc1OTMwNTI3OX0.yOI9Ul8hAjFrOyfWLPKLjhFFgB3ZH8R8rhDxo8sxjv0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"comment\": \"string\",\r\n  \"is_like\": true,\r\n  \"post_id\": \"a20d6d65-3098-466b-9153-871071fae65e\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3000/social/post",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"social",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update profile user (requred token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhZThmMTliLTI4ZmUtNDhhYS05MzgwLTlhNjBiNDkzYzQ0MyIsInJvbGUiOiJ1c2VyIiwiaXNzIjoibTE2eXVzdWZAZ2FudGVuZyIsImV4cCI6MTc1OTMwNzA3MH0.uhH5ZjQlYgQx8zTdZZ9v_OJ5_yuLSSuLAdsrNL_SVQ0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "fullname",
+							"value": "Radifan Muhammad ",
+							"type": "text"
+						},
+						{
+							"key": "bio",
+							"value": "Orang surabaya",
+							"type": "text"
+						},
+						{
+							"key": "profile_picture",
+							"type": "file",
+							"src": "/C:/Users/m16yusuf/Downloads/kindpng_1704702.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3000/users",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user create post (required token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhZThmMTliLTI4ZmUtNDhhYS05MzgwLTlhNjBiNDkzYzQ0MyIsInJvbGUiOiJ1c2VyIiwiaXNzIjoibTE2eXVzdWZAZ2FudGVuZyIsImV4cCI6MTc1OTMwNzA3MH0.uhH5ZjQlYgQx8zTdZZ9v_OJ5_yuLSSuLAdsrNL_SVQ0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "caption",
+							"value": "Gunung Manglayang",
+							"type": "text"
+						},
+						{
+							"key": "photo",
+							"type": "file",
+							"src": "/C:/Users/m16yusuf/OneDrive/Gambar/me/IMG20200611143822-01.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3000/users/post",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"post"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
