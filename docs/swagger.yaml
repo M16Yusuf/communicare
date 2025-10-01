@@ -21,6 +21,18 @@ definitions:
         example: false
         type: boolean
     type: object
+  models.InteracTionPost:
+    properties:
+      comment:
+        type: string
+      is_like:
+        description: User_id string  `db:"user_id" json:"user_id" binding:"required"`
+        type: boolean
+      post_id:
+        type: string
+    required:
+    - post_id
+    type: object
   models.InternalErrorResponse:
     properties:
       code:
@@ -63,6 +75,34 @@ definitions:
         example: false
         type: boolean
     type: object
+  models.PostDetail:
+    properties:
+      caption:
+        type: string
+      created_at:
+        type: string
+      fullname:
+        type: string
+      photo:
+        type: string
+      post_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.ProfileResponse:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      created_at:
+        type: string
+      fullname:
+        type: string
+      user_id:
+        type: string
+    type: object
   models.Response:
     properties:
       code:
@@ -77,6 +117,34 @@ definitions:
       page:
         example: 1
         type: integer
+    type: object
+  models.ResponseData:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      is_success:
+        example: true
+        type: boolean
+      message:
+        example: Example message success...
+        type: string
+      page:
+        example: 1
+        type: integer
+    type: object
+  models.UnauthorizedResponse:
+    properties:
+      code:
+        example: 401
+        type: integer
+      error:
+        example: example Unauthorized, please login again...
+        type: string
+      is_success:
+        example: false
+        type: boolean
     type: object
 host: 127.0.0.1:3000
 info:
@@ -182,6 +250,192 @@ paths:
       summary: Pendaftaran pengguna baru
       tags:
       - Auth
+  /social/follow/{user_id}:
+    post:
+      description: Memulai mengikuti pengguna lain berdasarkan ID pengguna. Membutuhkan
+        otentikasi.
+      parameters:
+      - description: ID pengguna yang ingin diikuti
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengikuti pengguna
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Token tidak valid atau tidak ada
+          schema:
+            $ref: '#/definitions/models.UnauthorizedResponse'
+        "500":
+          description: Kesalahan server internal
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Mengikuti Pengguna
+      tags:
+      - Social
+  /social/post:
+    get:
+      description: Mengambil daftar postingan terbaru dari pengguna yang sudah di-follow
+        oleh pengguna yang sedang login.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Daftar postingan berhasil dimuat
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.PostDetail'
+                  type: array
+              type: object
+        "401":
+          description: Token tidak valid atau tidak ada
+          schema:
+            $ref: '#/definitions/models.UnauthorizedResponse'
+        "500":
+          description: Kesalahan server internal
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Ambil Postingan dari Pengguna yang Diikuti (Feed)
+      tags:
+      - Social
+    post:
+      consumes:
+      - application/json
+      description: Memberi like pada postingan, menghapus like, atau menambahkan komentar
+        pada postingan.
+      parameters:
+      - description: Detail interaksi (Post ID, status like, dan/atau komentar)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.InteracTionPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Interaksi (like/komentar) berhasil diproses
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Input tidak valid (misalnya Post ID kosong)
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Token tidak valid atau tidak ada
+          schema:
+            $ref: '#/definitions/models.UnauthorizedResponse'
+        "500":
+          description: Kesalahan server internal
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Like atau Komentar Postingan
+      tags:
+      - Social
+  /users:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Memperbarui detail profil pengguna termasuk nama lengkap, bio,
+        dan avatar. Membutuhkan otentikasi.
+      parameters:
+      - description: Nama lengkap pengguna
+        in: formData
+        name: fullname
+        type: string
+      - description: Bio/deskripsi singkat pengguna
+        in: formData
+        name: bio
+        type: string
+      - description: File gambar untuk Avatar (Max 2MB)
+        in: formData
+        name: profile_picture
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profil berhasil diperbarui
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ProfileResponse'
+              type: object
+        "400":
+          description: Input tidak valid atau kegagalan upload file
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Token tidak valid atau tidak ada
+          schema:
+            $ref: '#/definitions/models.UnauthorizedResponse'
+        "500":
+          description: Kesalahan server internal
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Perbarui Profil Pengguna
+      tags:
+      - User
+  /users/post:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Mengunggah foto dan caption untuk membuat postingan baru. Membutuhkan
+        otentikasi (JWT).
+      parameters:
+      - description: Teks caption untuk postingan
+        in: formData
+        name: caption
+        type: string
+      - description: File gambar untuk Postingan (Wajib)
+        in: formData
+        name: photo
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Postingan berhasil dibuat
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Input tidak valid, file tidak ditemukan, atau kegagalan upload
+            file
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Token tidak valid atau tidak ada
+          schema:
+            $ref: '#/definitions/models.UnauthorizedResponse'
+        "500":
+          description: Kesalahan server internal
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Membuat Postingan Baru
+      tags:
+      - User
 securityDefinitions:
   JWTtoken:
     in: header

@@ -137,6 +137,298 @@
                 }
             }
         },
+        "/social/follow/{user_id}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Memulai mengikuti pengguna lain berdasarkan ID pengguna. Membutuhkan otentikasi.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Social"
+                ],
+                "summary": "Mengikuti Pengguna",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID pengguna yang ingin diikuti",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengikuti pengguna",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak ada",
+                        "schema": {
+                            "$ref": "#/definitions/models.UnauthorizedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Kesalahan server internal",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/social/post": {
+            "get": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Mengambil daftar postingan terbaru dari pengguna yang sudah di-follow oleh pengguna yang sedang login.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Social"
+                ],
+                "summary": "Ambil Postingan dari Pengguna yang Diikuti (Feed)",
+                "responses": {
+                    "200": {
+                        "description": "Daftar postingan berhasil dimuat",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.PostDetail"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak ada",
+                        "schema": {
+                            "$ref": "#/definitions/models.UnauthorizedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Kesalahan server internal",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Memberi like pada postingan, menghapus like, atau menambahkan komentar pada postingan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Social"
+                ],
+                "summary": "Like atau Komentar Postingan",
+                "parameters": [
+                    {
+                        "description": "Detail interaksi (Post ID, status like, dan/atau komentar)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InteracTionPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Interaksi (like/komentar) berhasil diproses",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Input tidak valid (misalnya Post ID kosong)",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak ada",
+                        "schema": {
+                            "$ref": "#/definitions/models.UnauthorizedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Kesalahan server internal",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "post": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Memperbarui detail profil pengguna termasuk nama lengkap, bio, dan avatar. Membutuhkan otentikasi.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Perbarui Profil Pengguna",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nama lengkap pengguna",
+                        "name": "fullname",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bio/deskripsi singkat pengguna",
+                        "name": "bio",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "File gambar untuk Avatar (Max 2MB)",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profil berhasil diperbarui",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.ProfileResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Input tidak valid atau kegagalan upload file",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak ada",
+                        "schema": {
+                            "$ref": "#/definitions/models.UnauthorizedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Kesalahan server internal",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/post": {
+            "post": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Mengunggah foto dan caption untuk membuat postingan baru. Membutuhkan otentikasi (JWT).",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Membuat Postingan Baru",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Teks caption untuk postingan",
+                        "name": "caption",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "File gambar untuk Postingan (Wajib)",
+                        "name": "photo",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Postingan berhasil dibuat",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Input tidak valid, file tidak ditemukan, atau kegagalan upload file",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak ada",
+                        "schema": {
+                            "$ref": "#/definitions/models.UnauthorizedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Kesalahan server internal",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{any}": {
             "get": {
                 "description": "if route not found, send 404 statusNotfound as response",
@@ -188,6 +480,24 @@
                 "is_success": {
                     "type": "boolean",
                     "example": false
+                }
+            }
+        },
+        "models.InteracTionPost": {
+            "type": "object",
+            "required": [
+                "post_id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "is_like": {
+                    "description": "User_id string  `db:\"user_id\" json:\"user_id\" binding:\"required\"`",
+                    "type": "boolean"
+                },
+                "post_id": {
+                    "type": "string"
                 }
             }
         },
@@ -250,6 +560,49 @@
                 }
             }
         },
+        "models.PostDetail": {
+            "type": "object",
+            "properties": {
+                "caption": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fullname": {
+                    "type": "string"
+                },
+                "photo": {
+                    "type": "string"
+                },
+                "post_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ProfileResponse": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fullname": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Response": {
             "type": "object",
             "properties": {
@@ -268,6 +621,45 @@
                 "page": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "models.ResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {},
+                "is_success": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Example message success..."
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "models.UnauthorizedResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 401
+                },
+                "error": {
+                    "type": "string",
+                    "example": "example Unauthorized, please login again..."
+                },
+                "is_success": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         }
