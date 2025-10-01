@@ -10,6 +10,10 @@ communicate, your communication app. This project is backend for social app "com
 
 ![erd communicare](/erd-communicare.png)
 
+## Sistem design
+
+![sistem design](/sistem-design.png)
+
 ## 🔧 Tech Stack
 
 - [Go](https://go.dev/dl/)
