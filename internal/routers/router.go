@@ -27,6 +27,7 @@ func InitRouter(db *pgxpool.Pool, rdb *redis.Client) *gin.Engine {
 	// setup routing
 	InitAuthRouter(router, db, rdb)
 	InitUserRouter(router, db, rdb)
+	InitSocialRouter(router, db, rdb)
 
 	router.NoRoute(handlers.NoRouteHandler)
 
