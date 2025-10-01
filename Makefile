@@ -17,3 +17,8 @@ migrate-status:
 
 migrate-force:
 	migrate -database $(DBURL) -path $(MIGRATIONPATH) force $(v)
+
+SEEDPATH=db/seeds
+
+migrate-seed:
+	psql $(DBURL) -f $(SEEDPATH)/seed.sql
