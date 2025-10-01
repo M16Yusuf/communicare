@@ -62,23 +62,26 @@ func (uh *UserHandler) UpdateProfile(ctx *gin.Context) {
 	}
 
 	// process the image
-	file := body.Avatar
-	filename, err := utils.FileUpload(ctx, file, "avatar")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Response: models.Response{
-				IsSuccess: false,
-				Code:      http.StatusBadRequest,
-			},
-			Err: err.Error(),
-		})
-		return
+	var filename *string
+	if body.Avatar != nil {
+		UploadFileName, err := utils.FileUpload(ctx, body.Avatar, "avatar")
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      http.StatusBadRequest,
+				},
+				Err: err.Error(),
+			})
+			return
+		}
+		filename = &UploadFileName
 	}
 
 	profile := models.Profile{
 		Id:       userID,
 		Fullname: body.Fullname,
-		Avatar:   &filename,
+		Avatar:   filename,
 		Bio:      body.Bio,
 	}
 	// query updated user to database
